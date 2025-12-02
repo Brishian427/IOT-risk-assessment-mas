@@ -109,9 +109,9 @@ sequenceDiagram
     GenEnsemble->>Aggregator: 9 Assessments
     
     Aggregator->>Aggregator: Synthesise Unified Draft
-    Aggregator->>ChallengerA: Synthesized Draft
-    Aggregator->>ChallengerB: Synthesized Draft
-    Aggregator->>ChallengerC: Synthesized Draft
+    Aggregator->>ChallengerA: Synthesised Draft
+    Aggregator->>ChallengerB: Synthesised Draft
+    Aggregator->>ChallengerC: Synthesised Draft
     
     par Parallel Validation
         ChallengerA->>ChallengerA: Check Logic
@@ -266,10 +266,20 @@ python scripts/cost_estimator.py
 
 ### Cost per Operation
 - **Typical (3 revisions)**: ~$0.80 USD (~¥5.79 CNY)
-- **Optimized (1 revision)**: ~$0.52 USD (~¥3.78 CNY)
+- **Optimised (1 revision)**: ~$0.52 USD (~¥3.78 CNY)
 - **Perfect (no revisions)**: ~$0.38 USD (~¥2.78 CNY)
 
 See `scripts/cost_estimator.py` for detailed cost breakdown.
+
+---
+
+## Human-in-the-Loop Validation
+
+While the MAS automates the generation of arguments, the human acts as the **"Final Arbiter of Logic"**:
+
+- **Reasoning Audit**: The Human Validator reviews the Synthesised Reasoning Trace (e.g., "Critical because of unpatched firmware vulnerability CVE-2025-XYZ") and validates alignment with real-world context.
+
+- **Edge Case Resolution**: If Challengers identify conflicts (e.g., Safety vs. Privacy trade-offs) causing infinite loops (detected after 3 cycles), the system triggers an Escalation Path requiring human ethical judgment.
 
 ---
 
