@@ -4,6 +4,10 @@ Created: 2025-12-02
 
 A Reasoning-First Multi-Agent System for IoT Risk Assessment using LangGraph, implementing a "Heterogeneous Sequential Debate" architecture.
 
+![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
+![LangGraph](https://img.shields.io/badge/LangGraph-0.2+-green.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
 ## Architecture
 
 The system implements a sequential debate pipeline:
