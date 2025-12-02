@@ -15,6 +15,89 @@ The system implements a sequential debate pipeline:
 5. **Challenger C (Safety)** - Validates compliance constraints
 6. **Verifier** - Routes workflow (loop or end) based on critiques
 
+### System Workflow Diagram
+
+```mermaid
+graph TD
+    Start([Risk Input]) --> GenEnsemble[Generator Ensemble<br/>9 Parallel Models]
+    
+    GenEnsemble --> |9 Assessments| Aggregator[Aggregator<br/>Synthesize Unified Draft]
+    
+    Aggregator --> |Synthesized Draft| ChallengerA[Challenger A<br/>Logic Check]
+    Aggregator --> |Synthesized Draft| ChallengerB[Challenger B<br/>Source Verification]
+    Aggregator --> |Synthesized Draft| ChallengerC[Challenger C<br/>Compliance Check]
+    
+    ChallengerA --> |Critique| Verifier[Verifier<br/>Route Decision]
+    ChallengerB --> |Critique| Verifier
+    ChallengerC --> |Critique| Verifier
+    
+    Verifier --> |All Pass| End([Final Assessment])
+    Verifier --> |Issues Found<br/>Revision Needed| RevisionCheck{Max Revisions<br/>Reached?}
+    
+    RevisionCheck --> |No| Aggregator
+    RevisionCheck --> |Yes| GracefulCheck{2/3 Challengers<br/>Pass?}
+    
+    GracefulCheck --> |Yes| End
+    GracefulCheck --> |No| End
+    
+    style GenEnsemble fill:#e1f5ff
+    style Aggregator fill:#fff4e1
+    style ChallengerA fill:#ffe1f5
+    style ChallengerB fill:#ffe1f5
+    style ChallengerC fill:#ffe1f5
+    style Verifier fill:#e1ffe1
+    style End fill:#f0f0f0
+```
+
+### Component Interaction Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant GenEnsemble as Generator Ensemble<br/>(9 Models)
+    participant Aggregator
+    participant ChallengerA as Challenger A<br/>(Logic)
+    participant ChallengerB as Challenger B<br/>(Source)
+    participant ChallengerC as Challenger C<br/>(Compliance)
+    participant Verifier
+    
+    User->>GenEnsemble: Risk Input
+    par Parallel Generation
+        GenEnsemble->>GenEnsemble: GPT-4o
+        GenEnsemble->>GenEnsemble: Claude 3.5 Sonnet
+        GenEnsemble->>GenEnsemble: Gemini Pro
+        GenEnsemble->>GenEnsemble: ... (6 more models)
+    end
+    GenEnsemble->>Aggregator: 9 Assessments
+    
+    Aggregator->>Aggregator: Synthesize Unified Draft
+    Aggregator->>ChallengerA: Synthesized Draft
+    Aggregator->>ChallengerB: Synthesized Draft
+    Aggregator->>ChallengerC: Synthesized Draft
+    
+    par Parallel Validation
+        ChallengerA->>ChallengerA: Check Logic
+        ChallengerB->>ChallengerB: Verify Sources
+        ChallengerC->>ChallengerC: Check Compliance
+    end
+    
+    ChallengerA->>Verifier: Critique A
+    ChallengerB->>Verifier: Critique B
+    ChallengerC->>Verifier: Critique C
+    
+    Verifier->>Verifier: Evaluate Critiques
+    
+    alt All Pass or Good Enough
+        Verifier->>User: Final Assessment
+    else Revision Needed
+        Verifier->>Aggregator: Revision Request
+        Note over Aggregator: Revise based on critiques
+        Aggregator->>ChallengerA: Revised Draft
+        Aggregator->>ChallengerB: Revised Draft
+        Aggregator->>ChallengerC: Revised Draft
+    end
+```
+
 ## Setup
 
 1. Install dependencies:
