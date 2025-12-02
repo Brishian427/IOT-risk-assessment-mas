@@ -1,0 +1,13 @@
+# IoT Risk Assessment Multi-Agent System
+# Created: 2025-01-XX
+
+langgraph>=0.2.0
+langchain-core>=0.3.0
+langchain-openai>=0.2.0
+langchain-anthropic>=0.2.0
+langchain-google-genai>=0.2.0
+langchain-tavily>=0.1.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+tqdm>=4.66.0
+

@@ -1,0 +1,10 @@
+# Project Standards
+- Use Python 3.11+.
+- Use Pydantic V2 for all data models (strictly typed JSON).
+- Use 'LangGraph' for state management (since this is a cyclic workflow).
+- All Agents must be defined as graph nodes.
+- Docstrings should explain the "Reasoning Trace" requirement.
+
+# Specific Architecture Rules
+- The "Reasoning Trace" is as important as the score. Never discard text; synthesize it.
+- Challenger B must always use a search tool to validate facts.

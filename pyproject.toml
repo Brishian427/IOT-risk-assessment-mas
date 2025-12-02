@@ -1,0 +1,20 @@
+[project]
+name = "iot-risk-assessment-mas"
+version = "0.1.0"
+description = "Reasoning-First Multi-Agent System for IoT Risk Assessment"
+requires-python = ">=3.11"
+dependencies = [
+    "langgraph>=0.2.0",
+    "langchain-core>=0.3.0",
+    "langchain-openai>=0.2.0",
+    "langchain-anthropic>=0.2.0",
+    "langchain-google-genai>=0.2.0",
+    "langchain-tavily>=0.1.0",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
