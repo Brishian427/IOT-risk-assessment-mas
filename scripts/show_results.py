@@ -5,7 +5,8 @@ Created: 2025-01-XX
 
 import sys
 import os
-sys.path.insert(0, os.path.dirname(__file__))
+# Add parent directory to path to import src
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.main import run_risk_assessment
 
