@@ -30,14 +30,14 @@ class Config:
     CHALLENGER_TEMPERATURE: float = 0.2  # Grounded but creative
     
     # Generator Ensemble Models
-    # Note: Gemini models temporarily removed due to API compatibility issues
-    # System will run with 8 models instead of 9 (still provides good diversity)
+    # Note: Gemini replaced with Claude 3 Haiku due to API compatibility issues
+    # Claude 3 Haiku provides fast, cost-effective alternative perspective
     GENERATOR_MODELS = [
         "gpt-4o",
         "gpt-4o-mini",
         "claude-3-5-sonnet-latest",
         "claude-3-opus-20240229",
-        # "gemini-1.5-pro",  # Temporarily disabled - API compatibility issue
+        "claude-3-haiku-20240307",  # Replaced Gemini - fast, cost-effective alternative
         "deepseek-chat",
         "llama-3.3-70b-versatile",
         "mistral-large-latest",

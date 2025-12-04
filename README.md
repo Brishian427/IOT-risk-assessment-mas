@@ -34,8 +34,8 @@ The system replaces the missing human expert panel with a heterogeneous ensemble
 
 The system implements a sequential debate pipeline:
 
-1. **Generator Ensemble** - 8 parallel models generate initial risk assessments
-2. **Aggregator** - Synthesises unified draft from 8 assessments
+1. **Generator Ensemble** - 9 parallel models generate initial risk assessments
+2. **Aggregator** - Synthesises unified draft from 9 assessments
 3. **Challenger A (Logic)** - Checks internal consistency
 4. **Challenger B (Source)** - Verifies external validity (regulations/CVEs)
 5. **Challenger C (Safety)** - Validates compliance constraints
@@ -59,7 +59,7 @@ Implementing MAS for risk assessment introduces specific failure modes. Our desi
 graph TD
     Start([Risk Input]) --> GenEnsemble[Generator Ensemble<br/>9 Parallel Models]
     
-    GenEnsemble --> |8 Assessments| Aggregator[Aggregator<br/>Synthesise Unified Draft]
+    GenEnsemble --> |9 Assessments| Aggregator[Aggregator<br/>Synthesise Unified Draft]
     
     Aggregator --> |Synthesised Draft| ChallengerA[Challenger A<br/>Logic Check]
     Aggregator --> |Synthesised Draft| ChallengerB[Challenger B<br/>Source Verification]
@@ -92,7 +92,7 @@ graph TD
 ```mermaid
 sequenceDiagram
     participant User
-    participant GenEnsemble as Generator Ensemble<br/>(8 Models)
+    participant GenEnsemble as Generator Ensemble<br/>(9 Models)
     participant Aggregator
     participant ChallengerA as Challenger A<br/>(Logic)
     participant ChallengerB as Challenger B<br/>(Source)
@@ -104,9 +104,9 @@ sequenceDiagram
         GenEnsemble->>GenEnsemble: GPT-4o
         GenEnsemble->>GenEnsemble: Claude 3.5 Sonnet
         GenEnsemble->>GenEnsemble: Gemini Pro
-        GenEnsemble->>GenEnsemble: ... (5 more models)
+        GenEnsemble->>GenEnsemble: ... (6 more models)
     end
-    GenEnsemble->>Aggregator: 8 Assessments
+    GenEnsemble->>Aggregator: 9 Assessments
     
     Aggregator->>Aggregator: Synthesise Unified Draft
     Aggregator->>ChallengerA: Synthesised Draft
@@ -221,7 +221,7 @@ python scripts/cost_estimator.py
 
 ## Models Used
 
-- **Generator Ensemble**: gpt-4o, gpt-4o-mini, claude-3-5-sonnet, claude-3-opus, deepseek-chat, llama-3.3-70b, mistral-large, o1-mini (8 models - Gemini temporarily disabled due to API compatibility)
+- **Generator Ensemble**: gpt-4o, gpt-4o-mini, claude-3-5-sonnet, claude-3-opus, claude-3-haiku, deepseek-chat, llama-3.3-70b, mistral-large, o1-mini (9 models - Gemini replaced with Claude 3 Haiku)
 - **Aggregator**: claude-3-5-sonnet-latest
 - **Challenger A**: gpt-4o (logic consistency checking)
 - **Challenger B**: deepseek-chat (source verification with search)
@@ -238,7 +238,7 @@ python scripts/cost_estimator.py
 
 **State Management**: `TypedDict` with `Annotated[List[Critique], operator.add]` handles concurrent updates from parallel challengers safely.
 
-**Generator Ensemble**: 8 heterogeneous models (GPT-4o, Claude Opus, DeepSeek, Llama, Mistral, O1-mini) run in parallel to generate diverse assessments with reasoning traces. Temperature set to `0.0` for deterministic output. (Gemini temporarily disabled due to API compatibility)
+**Generator Ensemble**: 9 heterogeneous models (GPT-4o, Claude Opus/Sonnet/Haiku, DeepSeek, Llama, Mistral, O1-mini) run in parallel to generate diverse assessments with reasoning traces. Temperature set to `0.0` for deterministic output. (Gemini replaced with Claude 3 Haiku for API compatibility)
 
 **Aggregator**: Dual-mode operation—initial synthesis combines 9 assessments; revision mode actively addresses challenger critiques. Uses Claude 3.5 Sonnet for synthesis quality.
 
@@ -262,7 +262,7 @@ python scripts/cost_estimator.py
 ### Execution Time
 - **One-time pass**: ~2-3 minutes
 - **With 3 revisions**: ~2-4 minutes (typical: ~2 minutes)
-- **Bottleneck**: Generator Ensemble (8 models in parallel, limited by slowest)
+- **Bottleneck**: Generator Ensemble (9 models in parallel, limited by slowest)
 
 ### Cost per Operation
 - **Typical (3 revisions)**: ~$0.80 USD (~¥5.79 CNY)
