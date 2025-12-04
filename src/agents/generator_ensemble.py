@@ -39,8 +39,15 @@ def _get_llm_for_model(model_name: str):
             api_key=Config.ANTHROPIC_API_KEY
         )
     elif model_name.startswith("gemini"):
+        # Map model names to available versions
+        model_mapping = {
+            "gemini-1.5-pro": "gemini-1.5-flash",  # Fallback to flash if pro unavailable
+            "gemini-pro": "gemini-1.5-flash",
+            "gemini-1.5-flash": "gemini-1.5-flash",
+        }
+        model_to_use = model_mapping.get(model_name, model_name)
         return ChatGoogleGenerativeAI(
-            model=model_name,
+            model=model_to_use,
             temperature=Config.GENERATOR_TEMPERATURE,
             google_api_key=Config.GOOGLE_API_KEY
         )
