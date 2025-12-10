@@ -1,0 +1,16 @@
+Lifecycle Stage: Usage Phase
+Risk Category: Lack of Continuous Updates
+
+Scenario Description:
+IoT devices rely on embedded firmware but manufacturers often stop providing security patches shortly after sale. Devices remain in active use for years while accumulating known vulnerabilities.
+
+Risk Mechanism:
+Security Decay: Devices become permanently vulnerable to known exploits (N-day vulnerabilities) because the firmware is closed-source and cannot be patched by the user.
+
+Context Data:
+- Amazon Echo (2nd Gen) and Google Nest devices received no security updates for 2-3 years despite active use
+- Smart kitchen devices often have critical misconfigurations (no database passwords) that remain unfixed indefinitely
+
+Task:
+Perform a Dual-Factor Risk Assessment. 1) FREQUENCY: How common is it for devices to outlive their support window? 2) IMPACT: What is the risk of having permanently unpatchable devices on a network?
+

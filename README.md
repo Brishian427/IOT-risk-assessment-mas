@@ -51,7 +51,7 @@ Implementing MAS for risk assessment introduces specific failure modes. Our desi
 | **Logical Inconsistency** | High severity score justified by weak or irrelevant arguments | Challenger A (Logic) checks internal consistency and score-argument alignment |
 | **Echo Chambers** | All agents agreeing due to shared underlying training data | Explicit use of distinct model families (Claude vs. GPT vs. Llama) for Generator vs. Challenger roles |
 | **Quality vs. Quantity** | Raw vote counting ignores argument quality | Aggregator prioritises quality of argument over raw count of votes, synthesising reasoning traces |
-| **Infinite Loops** | Revision cycles continuing indefinitely | Verifier enforces MAX_REVISIONS=3 with graceful degradation (accepts if ≥2/3 challengers pass) |
+| **Infinite Loops** | Revision cycles continuing indefinitely | Verifier ends workflow when ≥2/3 challengers pass (approved with reserved opinions). Falls back to MAX_REVISIONS=3 limit if 2/3 majority is never reached. |
 
 ### System Workflow Diagram
 
@@ -247,7 +247,7 @@ python scripts/cost_estimator.py
 - **Challenger B (Source)**: DeepSeek Chat with Tavily Search API verifies external citations
 - **Challenger C (Compliance)**: GPT-4o validates regulatory compliance
 
-**Verifier**: Claude 3.5 Sonnet routes workflow with graceful degradation—accepts if ≥2/3 challengers pass when max revisions reached.
+**Verifier**: Routes workflow and ends when ≥2/3 challengers pass (approved with reserved opinions). Falls back to MAX_REVISIONS=3 limit if 2/3 majority is never reached.
 
 **Data Validation**: Pydantic V2 ensures type safety with strict validation (scores 1-5, confidence 0.0-1.0).
 

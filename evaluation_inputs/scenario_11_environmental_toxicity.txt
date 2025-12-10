@@ -1,0 +1,18 @@
+Lifecycle Stage: End-of-Life (EOL)
+Risk Category: Environmental Toxicity & Public Health
+
+Scenario Description:
+A significant portion of IoT waste ends up in landfills due to recycling complexity. These devices contain valuable but toxic metals (copper, indium, gallium) and plastics with Brominated Flame Retardants (BFRs).
+
+Risk Mechanism:
+Toxic materials leach into soil and groundwater. Microplastics and BFRs enter the food chain (e.g., ingested by marine life like mussels/oysters), causing bio-accumulation. BFRs are linked to reproductive and hormonal disruption in humans.
+
+Context Data:
+- 30% of e-waste plastics contain BFRs
+- 960 marine species have ingested microplastics
+- Indium and gallium alter soil chemistry, affecting crop (rice) nutrient uptake
+- 40% unaccounted WEEE gap indicates massive scale of contamination
+
+Task:
+Evaluate the Risk Score (Frequency x Impact). For 'Frequency/Likelihood', ask yourself: 'Is this risk state a constant feature of the device, a widespread vulnerability, or a rare targeted attack?' Note that while the impact is delayed (long-term health/ecosystem damage), the frequency of contamination is high due to the 40% unaccounted WEEE gap (widespread improper disposal).
+

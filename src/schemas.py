@@ -16,11 +16,25 @@ class ReasoningTrace(BaseModel):
     vulnerabilities: List[str]  # Specific CVEs or technical flaws
 
 
+class RiskAssessmentBreakdown(BaseModel):
+    """Dual-factor risk assessment breakdown"""
+    frequency_score: int = Field(ge=1, le=5, description="Historical frequency score (1-5)")
+    frequency_rationale: str = Field(description="One sentence justifying the frequency based on history/default behavior")
+    impact_score: int = Field(ge=1, le=5, description="Impact severity score (1-5)")
+    impact_rationale: str = Field(description="One sentence justifying the severity of damage")
+    final_risk_score: int = Field(ge=1, le=25, description="Final risk score = frequency_score * impact_score")
+    risk_classification: str = Field(description="Risk classification: Low/Medium/High/Critical")
+
+
 class RiskAssessment(BaseModel):
     """Risk assessment output from a model"""
     model_name: str  # Track which model said this
-    score: int = Field(ge=1, le=5)
+    score: int = Field(ge=1, le=5, description="Legacy score (1-5) for backward compatibility")
     reasoning: ReasoningTrace
+    risk_assessment: Optional[RiskAssessmentBreakdown] = Field(
+        default=None,
+        description="Dual-factor risk assessment breakdown (frequency × impact)"
+    )
 
 
 class Critique(BaseModel):

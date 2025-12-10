@@ -1,0 +1,16 @@
+Lifecycle Stage: Usage Phase
+Risk Category: Protocol Weaknesses
+
+Scenario Description:
+IoT devices communicate using low-power wireless protocols (Bluetooth, ZigBee, Wi-Fi). These protocols often have varying security implementations or inherent design flaws that allow attackers within range to intercept data or inject commands without authentication.
+
+Risk Mechanism:
+Wireless Exploitation (Proximity): Vulnerabilities in standard protocols allow attackers to take control of devices without user interaction. Implementation quality varies wildly between manufacturers.
+
+Context Data:
+- The 'BlueBorne' vulnerability affected 20 million Amazon Echo and Google Home devices via Bluetooth flaws that were hard to detect
+- Researchers bypassed authentication on the Xiaomi Mi Robot's micro USB port to access encrypted traffic
+
+Task:
+Perform a Dual-Factor Risk Assessment. 1) FREQUENCY: How common are these protocol vulnerabilities in the wild? 2) IMPACT: What is the consequence of undetectable, proximity-based control?
+

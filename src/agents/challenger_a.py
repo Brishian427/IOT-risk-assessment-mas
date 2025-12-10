@@ -11,6 +11,8 @@ from langchain_openai import ChatOpenAI
 from src.schemas import StateSchema, Critique
 from src.config import Config
 from src.utils.prompt_templates import CHALLENGER_A_PROMPT
+from src.utils.reference_sources import get_reference_sources
+from src.utils.conversation_recorder import record
 
 
 def challenger_a_node(state: StateSchema) -> StateSchema:
@@ -44,9 +46,27 @@ Summary: {synthesized_draft.reasoning.summary}
 Arguments: {', '.join(synthesized_draft.reasoning.key_arguments)}
 """
     
+    # Format risk assessment breakdown if available
+    risk_assessment_text = "Not provided"
+    if synthesized_draft.risk_assessment:
+        ra = synthesized_draft.risk_assessment
+        risk_assessment_text = f"""
+Frequency Score: {ra.frequency_score}/5
+Frequency Rationale: {ra.frequency_rationale}
+Impact Score: {ra.impact_score}/5
+Impact Rationale: {ra.impact_rationale}
+Final Risk Score: {ra.final_risk_score}/25
+Risk Classification: {ra.risk_classification}
+Calculation Check: {ra.frequency_score} × {ra.impact_score} = {ra.frequency_score * ra.impact_score} (Expected: {ra.final_risk_score})
+"""
+    else:
+        risk_assessment_text = "Not provided (legacy format - only legacy score available)"
+    
     prompt = CHALLENGER_A_PROMPT.format(
         score=synthesized_draft.score,
-        reasoning=reasoning_text
+        reasoning=reasoning_text,
+        risk_assessment=risk_assessment_text,
+        reference_sources=get_reference_sources()
     )
     
     with tqdm(total=1, desc="Challenger A: Checking", unit="step", ncols=80, leave=False) as pbar:
@@ -55,6 +75,14 @@ Arguments: {', '.join(synthesized_draft.reasoning.key_arguments)}
             pbar.update(1)
             
             content = response.content if hasattr(response, 'content') else str(response)
+            record(
+                stage="challenger_a",
+                role="challenger",
+                model=Config.CHALLENGER_A_MODEL,
+                prompt=prompt,
+                response=content,
+                revision=state.get("revision_count", 0),
+            )
             
             # Parse JSON from response
             if "```json" in content:
@@ -76,6 +104,15 @@ Arguments: {', '.join(synthesized_draft.reasoning.key_arguments)}
                 recommendation=data.get("recommendation", "needs_review")
             )
         except Exception as e:
+            # Record the error for audit completeness
+            record(
+                stage="challenger_a",
+                role="challenger",
+                model=Config.CHALLENGER_A_MODEL,
+                prompt=prompt,
+                response=f"ERROR: {str(e)}",
+                revision=state.get("revision_count", 0),
+            )
             # On error, create a critique indicating review failure
             critique = Critique(
                 challenger_name="challenger_a",

@@ -46,6 +46,11 @@ htmlcov/
 
 # Logs
 *.log
+logs/
+
+# Results
+results/
+*.json
 
 # Temporary analysis files
 *.tmp

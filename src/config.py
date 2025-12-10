@@ -30,32 +30,31 @@ class Config:
     CHALLENGER_TEMPERATURE: float = 0.2  # Grounded but creative
     
     # Generator Ensemble Models
-    # Note: Gemini replaced with Claude 3 Haiku due to API compatibility issues
-    # Claude 3 Haiku provides fast, cost-effective alternative perspective
+    # OpenAI-focused ensemble (no duplicates)
     GENERATOR_MODELS = [
         "gpt-4o",
         "gpt-4o-mini",
-        "claude-3-5-sonnet-latest",
-        "claude-3-opus-20240229",
-        "claude-3-haiku-20240307",  # Replaced Gemini - fast, cost-effective alternative
-        "deepseek-chat",
-        "llama-3.3-70b-versatile",
-        "mistral-large-latest",
-        "o1-mini",
+        "gpt-4.1",
+        "gpt-4.1-mini",
+        "gpt-3.5-turbo-0125",
+        "gpt-3.5-turbo",
+        "gpt-4o-2024-08-06",
+        "gpt-4o-mini-2024-07-18",
+        "gpt-4o-mini-2024-11-20",
     ]
     
     # Aggregator Model
-    AGGREGATOR_MODEL: str = "claude-3-5-sonnet-latest"
+    AGGREGATOR_MODEL: str = "gpt-4o"
     AGGREGATOR_TEMPERATURE: float = 0.0
     
     # Challenger Models
-    CHALLENGER_A_MODEL: str = "gpt-4o"  # o1-preview not available, using gpt-4o directly
+    CHALLENGER_A_MODEL: str = "gpt-4o"
     CHALLENGER_A_FALLBACK: str = "gpt-4o"
-    CHALLENGER_B_MODEL: str = "deepseek-chat"
+    CHALLENGER_B_MODEL: str = "gpt-4o"  # avoid DeepSeek errors
     CHALLENGER_C_MODEL: str = "gpt-4o"
     
     # Verifier Model
-    VERIFIER_MODEL: str = "claude-3-5-sonnet-latest"
+    VERIFIER_MODEL: str = "gpt-4o"
     VERIFIER_TEMPERATURE: float = 0.0
     
     # Workflow Settings

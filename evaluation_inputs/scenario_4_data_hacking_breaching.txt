@@ -1,0 +1,17 @@
+Lifecycle Stage: Usage Phase
+Risk Category: Data Hacking & Breaching
+
+Scenario Description:
+Manufacturers often prioritize ease-of-use over security, leading to unencrypted transmission or unsecured cloud databases. Devices store sensitive credentials (WiFi passwords, API tokens) that are targeted by hackers.
+
+Risk Mechanism:
+Cascading Exposure: Attackers exploit weak architecture to steal massive datasets. Stolen credentials are used for 'credential stuffing' to access banking or corporate accounts.
+
+Context Data:
+- Mars Hydro exposed 2.7 billion records including plaintext WiFi passwords
+- 98% of IoT devices transmit data without encryption
+- Smart refrigerators have been hacked to send spam emails
+
+Task:
+Perform a Dual-Factor Risk Assessment. 1) FREQUENCY: Are these vulnerabilities widespread in the industry? 2) IMPACT: What is the financial and identity theft impact of massive data leaks?
+

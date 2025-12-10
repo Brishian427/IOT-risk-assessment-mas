@@ -1,0 +1,16 @@
+Lifecycle Stage: Usage Phase
+Risk Category: Mass Data Inference
+
+Scenario Description:
+Smart appliances (meters, vacuums) continuously collect behavioral data as part of their standard operation. Analysis of this metadata reveals occupancy patterns and intimate lifestyle details.
+
+Risk Mechanism:
+Metadata Analysis: Even without 'hacking', legitimate data streams reveal when a home is empty (burglary risk) or mapping data. This is an inherent feature, not a bug.
+
+Context Data:
+- GCHQ intervened in the UK smart meter rollout due to fears that usage data could reveal unoccupied homes
+- iRobot development units captured intimate images (e.g., users on toilets) which were leaked by data labelers
+
+Task:
+Perform a Dual-Factor Risk Assessment. 1) FREQUENCY: Is this a constant, default state of the device? 2) IMPACT: How severe is the privacy profiling and physical security risk?
+

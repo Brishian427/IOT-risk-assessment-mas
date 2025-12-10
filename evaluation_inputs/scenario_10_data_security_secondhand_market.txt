@@ -1,0 +1,17 @@
+Lifecycle Stage: End-of-Life (EOL)
+Risk Category: Data Privacy / Information Leakage
+
+Scenario Description:
+Consumers frequently resell used smart appliances to the second-hand market or pass them on. Many devices lack mandatory, easy-to-verify factory reset protocols, or users fail to perform them due to knowledge gaps.
+
+Risk Mechanism:
+Sensitive personal information (WiFi credentials, usage logs, user profiles) remains stored on the device's local memory. Second-hand buyers can access this data to launch privacy attacks or gain unauthorized access to the previous owner's network.
+
+Context Data:
+- The 'Collection-Market Ratio' gap suggests a large volume of devices are not being officially recycled
+- This implies high circulation in unregulated secondary markets
+- Lack of mandatory factory reset protocols on many IoT devices
+
+Task:
+Evaluate the Risk Score (Frequency x Impact). For 'Frequency/Likelihood', ask yourself: 'Is this risk state a constant feature of the device, a widespread vulnerability, or a rare targeted attack?' Consider the frequency of users failing to wipe data (widespread user behavior, lack of easy factory reset) and the impact of subsequent identity theft or privacy breaches.
+

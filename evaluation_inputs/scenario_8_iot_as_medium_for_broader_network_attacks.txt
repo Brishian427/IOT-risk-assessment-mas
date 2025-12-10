@@ -1,0 +1,17 @@
+Lifecycle Stage: Usage Phase
+Risk Category: IoT as Medium for Broader Network Attacks
+
+Scenario Description:
+Compromised IoT devices are rarely the final target; they are used as entry points ('pivot points') to attack the home network or recruited into botnets to attack others.
+
+Risk Mechanism:
+Lateral Movement & Botnets: Weak IoT devices allow hackers to bypass the firewall and attack PCs/NAS drives. Collectively, they are weaponized for DDoS attacks against national infrastructure.
+
+Context Data:
+- The Mirai Botnet enslaved 600,000 IoT devices to disrupt global internet services (DNS)
+- Hacked baby monitors provide a bridge to steal financial data from home computers
+- 100,000 smart fridges were used to send spam
+
+Task:
+Perform a Dual-Factor Risk Assessment. 1) FREQUENCY: How automated/widespread are these botnet recruitments? 2) IMPACT: What is the societal damage (grid/internet) and local network damage?
+

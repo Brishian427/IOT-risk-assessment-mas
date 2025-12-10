@@ -12,8 +12,10 @@ from langchain_tavily import TavilySearch
 from src.schemas import StateSchema, Critique
 from src.config import Config
 from src.utils.prompt_templates import CHALLENGER_B_PROMPT
+from src.utils.reference_sources import get_reference_sources
 from src.utils.citation_parser import CitationParser
 from src.utils.search_helpers import SearchQueryBuilder
+from src.utils.conversation_recorder import record
 
 
 def challenger_b_node(state: StateSchema) -> StateSchema:
@@ -70,12 +72,11 @@ def challenger_b_node(state: StateSchema) -> StateSchema:
         max_results=5
     )
     
-    # Initialize DeepSeek for analysis
+    # Initialize LLM for analysis (OpenAI)
     llm = ChatOpenAI(
         model=Config.CHALLENGER_B_MODEL,
         temperature=Config.CHALLENGER_TEMPERATURE,
-        api_key=Config.DEEPSEEK_API_KEY,
-        base_url=Config.DEEPSEEK_BASE_URL
+        api_key=Config.OPENAI_API_KEY
     )
     
     # Bind search tool to LLM
@@ -137,7 +138,8 @@ Arguments: {', '.join(reasoning.key_arguments)}
         prompt = CHALLENGER_B_PROMPT.format(
             assessment=assessment_text,
             citations=citations_text,
-            search_results=results_text
+            search_results=results_text,
+            reference_sources=get_reference_sources()
         )
         
         try:
@@ -145,6 +147,15 @@ Arguments: {', '.join(reasoning.key_arguments)}
             pbar2.update(1)
             
             content = response.content if hasattr(response, 'content') else str(response)
+            record(
+                stage="challenger_b",
+                role="challenger",
+                model=Config.CHALLENGER_B_MODEL,
+                prompt=prompt,
+                response=content,
+                revision=state.get("revision_count", 0),
+                extra={"citations_checked": len(all_citations)},
+            )
             
             # Parse JSON from response
             if "```json" in content:
@@ -166,6 +177,16 @@ Arguments: {', '.join(reasoning.key_arguments)}
                 recommendation=data.get("recommendation", "needs_review")
         )
         except Exception as e:
+            # Record the error for audit completeness
+            record(
+                stage="challenger_b",
+                role="challenger",
+                model=Config.CHALLENGER_B_MODEL,
+                prompt=prompt,
+                response=f"ERROR: {str(e)}",
+                revision=state.get("revision_count", 0),
+                extra={"citations_checked": len(all_citations)},
+            )
             # On error, check if any citations failed verification
             unverified = [r for r in search_results_summary if not r.get("verified", False)]
             if unverified:

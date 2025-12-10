@@ -1,10 +1,84 @@
-# Project Standards
-- Use Python 3.11+.
-- Use Pydantic V2 for all data models (strictly typed JSON).
-- Use 'LangGraph' for state management (since this is a cyclic workflow).
-- All Agents must be defined as graph nodes.
-- Docstrings should explain the "Reasoning Trace" requirement.
+# Project Context: IoT Risk Assessment Multi-Agent System (MAS)
 
-# Specific Architecture Rules
-- The "Reasoning Trace" is as important as the score. Never discard text; synthesize it.
-- Challenger B must always use a search tool to validate facts.
+You are an expert Python AI Engineer specializing in **LangGraph**, **Pydantic V2**, and **Heterogeneous Multi-Agent Systems**. You are building a "Reasoning-First" risk assessment engine.
+
+## 1. Technology Stack & Standards
+- **Language:** Python 3.11+
+- **Orchestration:** LangGraph (`langgraph`, `langchain-core`)
+- **Data Validation:** Pydantic V2 (`pydantic`) - STRICT TYPING REQUIRED.
+- **Search Tool:** Tavily API (`langchain-tavily`) or Serper.
+- **LLM Interfaces:**
+  - `langchain_openai` (for GPT-4o & DeepSeek V3 via OpenAI-compatible endpoint)
+  - `langchain_anthropic` (for Claude)
+  - `langchain_google_genai` (for Gemini)
+
+## 2. Core Architecture (The "Sequential Debate" Flow)
+
+### A. The State (StateSchema)
+The shared state must track:
+- `risk_input`: The raw scenario description.
+- `draft_assessments`: List[RiskAssessment] (Outputs from 9 Generators).
+- `synthesized_draft`: RiskAssessment (The unified draft from Aggregator).
+- `critiques`: List[Critique] (Outputs from Challengers).
+- `revision_count`: int.
+
+### B. The Agents (Nodes) & Model Config
+**CRITICAL RULE:** Use the specific S-Tier models below.
+
+1.  **Generator_Ensemble (The "Council of 9"):**
+    - **Role:** Generate initial risk assessments.
+    - **Temperature:** **MUST BE 0.0** (Maximum Analyticity).
+    - **Model List (High-Intelligence Diversity):**
+      1. `gpt-4o` (OpenAI)
+      2. `gpt-4o-mini` (OpenAI - efficient baseline)
+      3. `claude-3-5-sonnet-latest` (Anthropic)
+      4. `claude-3-opus-20240229` (Anthropic)
+      5. `gemini-1.5-pro` (Google)
+      6. `deepseek-chat` (DeepSeek V3 - Logic powerhouse)
+      7. `llama-3.3-70b-versatile` (via Groq - latest Llama)
+      8. `mistral-large-latest` (Mistral)
+      9. `o1-mini` (OpenAI - Reasoning specialist)
+    - **Implementation:** Run these 9 calls in PARALLEL (`asyncio.gather`).
+
+2.  **Aggregator (Synthesizer):**
+    - **Model:** `claude-3-5-sonnet-latest`.
+    - **Reasoning:** Chosen for its superior ability to handle large contexts and nuance without dropping details.
+    - **Role:** Merge 9 JSONs into one Unified Draft.
+
+3.  **Challenger Agents (The S-Tier Critics):**
+    - **Temperature:** **0.2** (Grounded but creative enough to find edge cases).
+
+    * **Challenger_A (Logic):**
+        * **Model:** `o1-preview` (or `gpt-4o` if rate limited).
+        * **Role:** Pure reasoning check. Does the score match the evidence?
+        * **Prompt:** "Act as a formal logician. Identify non-sequiturs in the draft."
+
+    * **Challenger_B (Source/Grounding):**
+        * **Model:** `deepseek-chat` (DeepSeek V3).
+        * **Why:** Excellent at context retrieval and factual consistency.
+        * **Tool:** **Tavily Search API** (Must search for every citation).
+        * **Role:** "The Fact Checker". Verify regulations and CVEs exist.
+
+    * **Challenger_C (Safety & Compliance):**
+        * **Model:** `gpt-4o` (OpenAI).
+        * **Why:** Highest alignment with safety standards and instruction following.
+        * **Role:** Check against ISO/PSTI safety constraints.
+
+4.  **Verifier (The Gatekeeper):**
+    - **Model:** `claude-3-5-sonnet-latest`.
+    - **Role:** Router logic. If critiques exist -> Loop. Else -> End.
+
+## 3. Data Schemas (Pydantic)
+Use these exact structures to enforce the "Reasoning-First" approach:
+
+```python
+class ReasoningTrace(BaseModel):
+    summary: str
+    key_arguments: List[str]
+    regulatory_citations: List[str] # Specific laws/standards
+    vulnerabilities: List[str] # Specific CVEs or technical flaws
+
+class RiskAssessment(BaseModel):
+    model_name: str # Track which model said this
+    score: int = Field(ge=1, le=5)
+    reasoning: ReasoningTrace

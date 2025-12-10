@@ -1,0 +1,17 @@
+Lifecycle Stage: Usage Phase
+Risk Category: Remote Direct Control
+
+Scenario Description:
+Internet connectivity enables remote commands for heating, locking, and monitoring. Insufficient input validation or weak encryption allows attackers to bypass verification and issue malicious physical commands.
+
+Risk Mechanism:
+Physical Actuation & Harassment: Attackers physically alter the home environment (disabling heating, unlocking doors) or use 2-way audio to harass occupants.
+
+Context Data:
+- British Gas Hive app transmitted unencrypted data, allowing potential heating schedule manipulation
+- A Finland HVAC DDoS attack disabled heating in winter
+- A hacker used a compromised Ring camera to speak to an 8-year-old child ('Santa Claus' hack)
+
+Task:
+Perform a Dual-Factor Risk Assessment. 1) FREQUENCY: Is this a common automated attack or does it require targeted hacking skill? 2) IMPACT: Does it pose immediate physical safety risks (freezing/entry) or psychological harm?
+

@@ -83,7 +83,7 @@ class SearchQueryBuilder:
                 relevant_urls.append(result.get("url", ""))
         
         max_confidence = max(confidence_scores) if confidence_scores else 0.0
-        verified = max_confidence >= 0.7
+        verified = max_confidence >= 0.6  # Lowered from 0.7 to 0.6 for more lenient verification
         
         return {
             "verified": verified,

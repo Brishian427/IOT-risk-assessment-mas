@@ -11,6 +11,8 @@ from langchain_openai import ChatOpenAI
 from src.schemas import StateSchema, Critique
 from src.config import Config
 from src.utils.prompt_templates import CHALLENGER_C_PROMPT
+from src.utils.reference_sources import get_reference_sources
+from src.utils.conversation_recorder import record
 
 
 def challenger_c_node(state: StateSchema) -> StateSchema:
@@ -47,7 +49,8 @@ Vulnerabilities: {', '.join(synthesized_draft.reasoning.vulnerabilities)}
     
     prompt = CHALLENGER_C_PROMPT.format(
         score=synthesized_draft.score,
-        reasoning=reasoning_text
+        reasoning=reasoning_text,
+        reference_sources=get_reference_sources()
     )
     
     with tqdm(total=1, desc="Challenger C: Checking", unit="step", ncols=80, leave=False) as pbar:
@@ -56,6 +59,14 @@ Vulnerabilities: {', '.join(synthesized_draft.reasoning.vulnerabilities)}
             pbar.update(1)
             
             content = response.content if hasattr(response, 'content') else str(response)
+            record(
+                stage="challenger_c",
+                role="challenger",
+                model=Config.CHALLENGER_C_MODEL,
+                prompt=prompt,
+                response=content,
+                revision=state.get("revision_count", 0),
+            )
             
             # Parse JSON from response
             if "```json" in content:
@@ -77,6 +88,15 @@ Vulnerabilities: {', '.join(synthesized_draft.reasoning.vulnerabilities)}
                 recommendation=data.get("recommendation", "needs_review")
             )
         except Exception as e:
+            # Record the error for audit completeness
+            record(
+                stage="challenger_c",
+                role="challenger",
+                model=Config.CHALLENGER_C_MODEL,
+                prompt=prompt,
+                response=f"ERROR: {str(e)}",
+                revision=state.get("revision_count", 0),
+            )
             # On error, create a critique indicating review failure
             critique = Critique(
                 challenger_name="challenger_c",

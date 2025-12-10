@@ -1,0 +1,17 @@
+Lifecycle Stage: Usage Phase
+Risk Category: User Awareness Risk
+
+Scenario Description:
+Consumers treat IoT devices as 'install-and-forget' appliances. There is a disconnect between user expectations and the technical reality of maintenance (passwords/updates) and legal obligations (privacy laws).
+
+Risk Mechanism:
+Operational Negligence & Legal Liability: Users fail to change default passwords, enabling botnets. Users also unknowingly violate data protection laws by recording public spaces, leading to lawsuits.
+
+Context Data:
+- In 'Fairhurst v Woodard', a Ring doorbell user faced £100k potential damages for violating neighbors' privacy due to ignorance of the law
+- UK smart meter adoption faces 'absolute disinterest'
+- Parents in the S.C. baby monitor hack admitted security risks were 'not common knowledge'
+
+Task:
+Perform a Dual-Factor Risk Assessment. 1) FREQUENCY: How prevalent is user negligence/apathy? (Is it the norm?) 2) IMPACT: What are the legal (fines) and systemic consequences?
+

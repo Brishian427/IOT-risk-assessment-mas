@@ -1,0 +1,17 @@
+Lifecycle Stage: Usage Phase
+Risk Category: Cloud Dependency
+
+Scenario Description:
+Devices are designed to rely entirely on manufacturer cloud servers for core functionality. They lack local operation capabilities, making them vulnerable to vendor failures.
+
+Risk Mechanism:
+Service Failure & Trust Erosion: Outages, backend glitches, or vendor bankruptcy can 'brick' expensive hardware. Centralization also means user data must traverse third-party servers.
+
+Context Data:
+- Ring's backend glitch (May 2025) caused mass panic by incorrectly displaying 'unauthorized logins'
+- UK Smart Meter rollouts faced multi-million pound fines (E.on, British Gas) due to centralized data delays
+- iRobot data was sent to third-party labelers in Venezuela
+
+Task:
+Perform a Dual-Factor Risk Assessment. 1) FREQUENCY: Do cloud outages or glitches occur? 2) IMPACT: What is the consequence of losing essential home infrastructure (heating/monitoring)?
+

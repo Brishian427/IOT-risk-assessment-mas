@@ -1,0 +1,17 @@
+Lifecycle Stage: End-of-Life (EOL)
+Risk Category: Physical Safety / Fire Hazard
+
+Scenario Description:
+Due to a lack of clear disposal guidance and insufficient WEEE collection capacity (40% gap), households often hoard old IoT devices or dispose of them in general waste. These devices increasingly contain lithium-ion batteries embedded in complex systems (e.g., robot vacuums, smart speakers) that are hard to remove.
+
+Risk Mechanism:
+When stored in warm, cluttered spaces (hoarding) or crushed in general waste trucks, battery degradation or short circuits can trigger ignition. Faulty internal circuits (e.g., Hitcon smart plug discharge) also pose fire risks.
+
+Context Data:
+- 45% of householders are unaware of fire risks from batteries
+- Climate change (hotter summers) and lack of air conditioning in UK homes exacerbate the ignition risk
+- 40% gap in WEEE collection capacity
+
+Task:
+Evaluate the Risk Score (Frequency x Impact). For 'Frequency/Likelihood', ask yourself: 'Is this risk state a constant feature of the device, a widespread vulnerability, or a rare targeted attack?' Consider the high frequency of improper storage/disposal (widespread user behavior, 40% WEEE gap) and the potential for severe physical harm or asset loss from residential fires.
+
