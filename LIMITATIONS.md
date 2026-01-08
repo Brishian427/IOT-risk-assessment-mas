@@ -30,7 +30,7 @@ This Multi-Agent System (MAS) for IoT Risk Assessment is a **proof-of-concept** 
 | Feature | Status | Limitation |
 |---------|--------|------------|
 | Model heterogeneity | ⚠️ Partial | **Architecture supports multi-provider; fallback to OpenAI when API keys unavailable** |
-| RAG document store | ⚠️ Partial | Requires initial population; OPSS should add regulatory corpus |
+| RAG document store | ⚠️ Partial | Requires initial population; UK product safety regulator should add regulatory corpus |
 | Human escalation | ⚠️ Partial | Saves escalation files; no automated notification system |
 
 ### ❌ Not Implemented (Production Requirements)

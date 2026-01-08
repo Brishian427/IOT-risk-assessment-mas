@@ -10,7 +10,7 @@ A Reasoning-First Multi-Agent System for IoT Risk Assessment using LangGraph, im
 
 ## Meta-Context
 
-This project was developed as part of the **PPE Capstone - IoT Group** (November 2025) and serves as a strategic advisory document for the **Centre for Strategy & Evaluation Services (CSES)**. 
+This project was developed as part of the **PPE Capstone - IoT Group** (November 2025) and serves as a strategic advisory document for an external client. 
 
 ### The Problem: The "Expert Gap"
 
