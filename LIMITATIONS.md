@@ -184,11 +184,6 @@ For production deployment, we strongly recommend engaging professional software 
 
 ---
 
-## Contact
-
-For questions about this system:
-- **Academic Supervisor:** [LSE GV343 Course Team]
-- **Project Client:** CSES / OPSS
 
 **Note:** Student team availability is limited to the academic project period.
 
