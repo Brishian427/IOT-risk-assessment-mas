@@ -46,6 +46,14 @@ class Critique(BaseModel):
     recommendation: str  # "accept", "reject", "needs_review"
 
 
+class EscalationInfo(BaseModel):
+    """Human escalation information"""
+    escalated: bool = Field(default=False, description="Whether escalation was triggered")
+    reason: str = Field(default="", description="Reason for escalation")
+    timestamp: Optional[str] = Field(default=None, description="When escalation occurred")
+    escalation_file: Optional[str] = Field(default=None, description="Path to escalation file")
+
+
 class StateSchema(TypedDict):
     """LangGraph state schema"""
     risk_input: str
@@ -53,4 +61,5 @@ class StateSchema(TypedDict):
     synthesized_draft: Optional[RiskAssessment]
     critiques: Annotated[List[Critique], add]  # Use reducer for parallel updates
     revision_count: int
+    escalation: Optional[EscalationInfo]  # Human escalation information
 

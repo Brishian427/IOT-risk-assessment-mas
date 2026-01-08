@@ -30,6 +30,28 @@ The system replaces the missing human expert panel with a heterogeneous ensemble
 - Synthesise consensus through iterative refinement
 - Provide human-validatable reasoning trails for regulatory review
 
+## ⚠️ Important: Production Readiness
+
+This system is a **proof-of-concept** developed as a student capstone project. 
+
+### What This System IS:
+- ✅ A demonstration of reasoning-first multi-agent architecture
+- ✅ A functional prototype producing valid risk assessments
+- ✅ An extensible framework for regulatory document validation
+
+### What This System IS NOT:
+- ❌ A production-ready regulatory tool
+- ❌ A substitute for professional risk assessment
+- ❌ A system validated for high-volume deployment
+
+### Transparent Fallback
+
+The system is **architecturally designed** for the "Council of 9" - heterogeneous LLM deployment across 6 provider families (OpenAI, Anthropic, Google, DeepSeek, Groq, Mistral). When API keys are not available, it transparently falls back to OpenAI-only operation. All fallback events are logged for audit purposes.
+
+See [LIMITATIONS.md](./LIMITATIONS.md) for complete details.
+
+---
+
 ## Architecture
 
 The system implements a sequential debate pipeline:
@@ -221,12 +243,12 @@ python scripts/cost_estimator.py
 
 ## Models Used
 
-- **Generator Ensemble**: gpt-4o, gpt-4o-mini, claude-3-5-sonnet, claude-3-opus, claude-3-haiku, deepseek-chat, llama-3.3-70b, mistral-large, o1-mini (9 models - Gemini replaced with Claude 3 Haiku)
-- **Aggregator**: claude-3-5-sonnet-latest
-- **Challenger A**: gpt-4o (logic consistency checking)
-- **Challenger B**: deepseek-chat (source verification with search)
-- **Challenger C**: gpt-4o (compliance validation)
-- **Verifier**: claude-3-5-sonnet-latest
+- **Generator Ensemble**: gpt-4o, gpt-4o-mini, o1-mini, claude-3-5-sonnet-20241022, claude-3-opus-20240229, gemini-1.5-pro, deepseek-chat, llama-3.3-70b-versatile, mistral-large-latest (9 models across 6 provider families)
+- **Aggregator**: claude-3-5-sonnet-20241022 (Anthropic)
+- **Challenger A**: gpt-4o (OpenAI - logic consistency checking)
+- **Challenger B**: claude-3-5-sonnet-20241022 (Anthropic - source verification with Tavily Search API)
+- **Challenger C**: gemini-1.5-pro (Google - compliance validation)
+- **Verifier**: claude-3-5-sonnet-20241022 (Anthropic)
 
 ---
 
@@ -238,14 +260,14 @@ python scripts/cost_estimator.py
 
 **State Management**: `TypedDict` with `Annotated[List[Critique], operator.add]` handles concurrent updates from parallel challengers safely.
 
-**Generator Ensemble**: 9 heterogeneous models (GPT-4o, Claude Opus/Sonnet/Haiku, DeepSeek, Llama, Mistral, O1-mini) run in parallel to generate diverse assessments with reasoning traces. Temperature set to `0.0` for deterministic output. (Gemini replaced with Claude 3 Haiku for API compatibility)
+**Generator Ensemble**: 9 heterogeneous models across 6 provider families (OpenAI: GPT-4o, GPT-4o-mini, O1-mini; Anthropic: Claude 3.5 Sonnet, Claude 3 Opus; Google: Gemini 1.5 Pro; DeepSeek: DeepSeek Chat; Groq: Llama 3.3 70B; Mistral: Mistral Large) run in parallel to generate diverse assessments with reasoning traces. Temperature set to `0.0` for deterministic output.
 
-**Aggregator**: Dual-mode operation—initial synthesis combines 9 assessments; revision mode actively addresses challenger critiques. Uses Claude 3.5 Sonnet for synthesis quality.
+**Aggregator**: Dual-mode operation—initial synthesis combines 9 assessments; revision mode actively addresses challenger critiques. Uses Claude 3.5 Sonnet (Anthropic) for synthesis quality.
 
-**Challenger Architecture**: Three specialised validators run in parallel:
-- **Challenger A (Logic)**: GPT-4o checks internal consistency and score-argument alignment
-- **Challenger B (Source)**: DeepSeek Chat with Tavily Search API verifies external citations
-- **Challenger C (Compliance)**: GPT-4o validates regulatory compliance
+**Challenger Architecture**: Three specialised validators run in parallel, each using different provider families to prevent echo chambers:
+- **Challenger A (Logic)**: GPT-4o (OpenAI) checks internal consistency and score-argument alignment
+- **Challenger B (Source)**: Claude 3.5 Sonnet (Anthropic) with Tavily Search API verifies external citations
+- **Challenger C (Compliance)**: Gemini 1.5 Pro (Google) validates regulatory compliance
 
 **Verifier**: Routes workflow and ends when ≥2/3 challengers pass (approved with reserved opinions). Falls back to MAX_REVISIONS=3 limit if 2/3 majority is never reached.
 

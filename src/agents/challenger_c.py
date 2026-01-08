@@ -5,11 +5,9 @@ Created: 2025-01-XX
 
 import json
 from tqdm import tqdm
-from langchain_openai import ChatOpenAI
-# Node functions don't need explicit Node import in LangGraph
-
 from src.schemas import StateSchema, Critique
 from src.config import Config
+from src.utils.llm_factory import LLMFactory
 from src.utils.prompt_templates import CHALLENGER_C_PROMPT
 from src.utils.reference_sources import get_reference_sources
 from src.utils.conversation_recorder import record
@@ -32,12 +30,18 @@ def challenger_c_node(state: StateSchema) -> StateSchema:
             "critiques": critiques + [critique]
         }
     
-    # Initialize GPT-4o for compliance checking
-    llm = ChatOpenAI(
+    # Create LLM with transparent fallback
+    llm, actual_provider, actual_model, was_fallback = LLMFactory.create(
         model=Config.CHALLENGER_C_MODEL,
+        provider=Config.CHALLENGER_C_PROVIDER,
         temperature=Config.CHALLENGER_TEMPERATURE,
-        api_key=Config.OPENAI_API_KEY
+        fallback_model=Config.CHALLENGER_C_FALLBACK_MODEL,
+        fallback_provider=Config.CHALLENGER_C_FALLBACK_PROVIDER,
+        context="challenger_c"
     )
+    
+    if was_fallback and Config.LOG_FALLBACK_EVENTS:
+        print(f"   ℹ️  Challenger C using fallback: {actual_provider}/{actual_model}")
     
     # Format reasoning for prompt
     reasoning_text = f"""
@@ -62,10 +66,17 @@ Vulnerabilities: {', '.join(synthesized_draft.reasoning.vulnerabilities)}
             record(
                 stage="challenger_c",
                 role="challenger",
-                model=Config.CHALLENGER_C_MODEL,
+                model=f"{actual_provider}/{actual_model}",
                 prompt=prompt,
                 response=content,
                 revision=state.get("revision_count", 0),
+                extra={
+                    "intended_provider": Config.CHALLENGER_C_PROVIDER,
+                    "intended_model": Config.CHALLENGER_C_MODEL,
+                    "actual_provider": actual_provider,
+                    "actual_model": actual_model,
+                    "fallback_used": was_fallback
+                }
             )
             
             # Parse JSON from response
@@ -92,10 +103,11 @@ Vulnerabilities: {', '.join(synthesized_draft.reasoning.vulnerabilities)}
             record(
                 stage="challenger_c",
                 role="challenger",
-                model=Config.CHALLENGER_C_MODEL,
+                model=f"{Config.CHALLENGER_C_PROVIDER}/{Config.CHALLENGER_C_MODEL}",
                 prompt=prompt,
                 response=f"ERROR: {str(e)}",
                 revision=state.get("revision_count", 0),
+                extra={"error": str(e)},
             )
             # On error, create a critique indicating review failure
             critique = Critique(

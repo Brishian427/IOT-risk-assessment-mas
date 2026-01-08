@@ -5,12 +5,12 @@ Created: 2025-01-XX
 
 import json
 from tqdm import tqdm
-from langchain_openai import ChatOpenAI
 from langchain_tavily import TavilySearch
 # Node functions don't need explicit Node import in LangGraph
 
 from src.schemas import StateSchema, Critique
 from src.config import Config
+from src.utils.llm_factory import LLMFactory
 from src.utils.prompt_templates import CHALLENGER_B_PROMPT
 from src.utils.reference_sources import get_reference_sources
 from src.utils.citation_parser import CitationParser
@@ -72,12 +72,18 @@ def challenger_b_node(state: StateSchema) -> StateSchema:
         max_results=5
     )
     
-    # Initialize LLM for analysis (OpenAI)
-    llm = ChatOpenAI(
+    # Create LLM with transparent fallback
+    llm, actual_provider, actual_model, was_fallback = LLMFactory.create(
         model=Config.CHALLENGER_B_MODEL,
+        provider=Config.CHALLENGER_B_PROVIDER,
         temperature=Config.CHALLENGER_TEMPERATURE,
-        api_key=Config.OPENAI_API_KEY
+        fallback_model=Config.CHALLENGER_B_FALLBACK_MODEL,
+        fallback_provider=Config.CHALLENGER_B_FALLBACK_PROVIDER,
+        context="challenger_b"
     )
+    
+    if was_fallback and Config.LOG_FALLBACK_EVENTS:
+        print(f"   ℹ️  Challenger B using fallback: {actual_provider}/{actual_model}")
     
     # Bind search tool to LLM
     llm_with_tools = llm.bind_tools([search_tool])
@@ -150,11 +156,18 @@ Arguments: {', '.join(reasoning.key_arguments)}
             record(
                 stage="challenger_b",
                 role="challenger",
-                model=Config.CHALLENGER_B_MODEL,
+                model=f"{actual_provider}/{actual_model}",
                 prompt=prompt,
                 response=content,
                 revision=state.get("revision_count", 0),
-                extra={"citations_checked": len(all_citations)},
+                extra={
+                    "citations_checked": len(all_citations),
+                    "intended_provider": Config.CHALLENGER_B_PROVIDER,
+                    "intended_model": Config.CHALLENGER_B_MODEL,
+                    "actual_provider": actual_provider,
+                    "actual_model": actual_model,
+                    "fallback_used": was_fallback
+                }
             )
             
             # Parse JSON from response
@@ -181,11 +194,11 @@ Arguments: {', '.join(reasoning.key_arguments)}
             record(
                 stage="challenger_b",
                 role="challenger",
-                model=Config.CHALLENGER_B_MODEL,
+                model=f"{Config.CHALLENGER_B_PROVIDER}/{Config.CHALLENGER_B_MODEL}",
                 prompt=prompt,
                 response=f"ERROR: {str(e)}",
                 revision=state.get("revision_count", 0),
-                extra={"citations_checked": len(all_citations)},
+                extra={"citations_checked": len(all_citations), "error": str(e)},
             )
             # On error, check if any citations failed verification
             unverified = [r for r in search_results_summary if not r.get("verified", False)]

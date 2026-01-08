@@ -68,6 +68,15 @@ def run_risk_assessment(
         if logger:
             logger.log_final_result(final_state)
             logger.log_conversations(get_records())
+            
+            # Log escalation if present
+            escalation = final_state.get("escalation")
+            if escalation and escalation.escalated:
+                logger.log_escalation({
+                    "reason": escalation.reason,
+                    "escalation_file": escalation.escalation_file,
+                    "timestamp": escalation.timestamp
+                })
         
         # Save result to JSON file
         saved_filepath = None
@@ -87,7 +96,15 @@ def run_risk_assessment(
         
         # Log completion
         if logger:
-            logger.log_completion(saved_filepath)
+            escalation = final_state.get("escalation")
+            escalation_info = None
+            if escalation and escalation.escalated:
+                escalation_info = {
+                    "reason": escalation.reason,
+                    "escalation_file": escalation.escalation_file,
+                    "timestamp": escalation.timestamp
+                }
+            logger.log_completion(saved_filepath, escalation_info)
         
         return final_state
         

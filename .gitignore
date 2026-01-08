@@ -56,3 +56,7 @@ results/
 *.tmp
 temp/
 
+# Audit reports
+MAS_ARCHITECTURE_AUDIT_REPORT*.md
+*_AUDIT_REPORT*.md
+

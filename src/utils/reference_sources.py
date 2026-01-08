@@ -1,10 +1,19 @@
 """
 Reference Sources for Multi-Agent Risk Assessment
-These sources provide context and data for all agents to reference during assessment
+
+HYBRID APPROACH:
+This module provides reference sources using a hybrid approach:
+1. RAG database (dynamic, query-specific) - if available
+2. Hardcoded baseline sources (always included as fallback)
+
+The get_reference_sources() function now delegates to rag_database.py
+which combines RAG retrieval with this hardcoded baseline.
+
 Created: 2025-12-09
+Updated: 2025-01-XX (Hybrid RAG + hardcode support)
 """
 
-# Reference sources in structured format
+# Reference sources in structured format (BASELINE - always included)
 REFERENCE_SOURCES = """
 === REFERENCE SOURCES FOR RISK ASSESSMENT ===
 
@@ -104,7 +113,25 @@ These sources provide authoritative context, statistics, and industry insights t
 """
 
 
-def get_reference_sources() -> str:
-    """Get formatted reference sources for use in prompts"""
-    return REFERENCE_SOURCES
+def get_reference_sources(risk_topic: str = "", use_rag: bool = True) -> str:
+    """
+    Get formatted reference sources for use in prompts.
+    
+    HYBRID APPROACH:
+    - Delegates to rag_database.get_reference_sources() which combines:
+      1. RAG database (dynamic, query-specific) - if available
+      2. Hardcoded baseline (this module) - always included
+    
+    Args:
+        risk_topic: Optional topic to focus RAG retrieval
+        use_rag: Whether to attempt RAG retrieval (default: True)
+    
+    Returns:
+        Formatted context string combining RAG + hardcoded baseline
+    """
+    # Import here to avoid circular imports
+    from src.utils.rag_database import get_reference_sources as get_rag_reference_sources
+    
+    # Use hybrid approach from RAG database module
+    return get_rag_reference_sources(risk_topic=risk_topic, use_rag=use_rag)
 

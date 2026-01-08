@@ -52,6 +52,8 @@ def save_result_to_json(
             "revision_count": result.get("revision_count", 0),
             "total_assessments": len(result.get("draft_assessments", [])),
             "total_critiques": len(result.get("critiques", [])),
+            "escalated": False,
+            "escalation_file": None
         },
         "input": {
             "risk_scenario": risk_input
@@ -131,6 +133,14 @@ def save_result_to_json(
     # Attach conversation log if provided
     if conversation_log:
         result_data["conversation_log"] = conversation_log
+    
+    # Add escalation information if present
+    escalation = result.get("escalation")
+    if escalation:
+        result_data["metadata"]["escalated"] = escalation.escalated
+        result_data["metadata"]["escalation_file"] = escalation.escalation_file
+        result_data["metadata"]["escalation_reason"] = escalation.reason
+        result_data["metadata"]["escalation_timestamp"] = escalation.timestamp
     
     # Save to JSON file
     with open(filepath, 'w', encoding='utf-8') as f:

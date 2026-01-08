@@ -141,12 +141,28 @@ class AssessmentLogger:
         else:
             self.logger.error(f"Error: {str(error)}")
     
-    def log_completion(self, filepath: Optional[str] = None):
+    def log_escalation(self, escalation_info: Dict[str, Any]):
+        """Log human escalation event"""
+        self.logger.info("\n" + "=" * 80)
+        self.logger.info("⚠️  HUMAN ESCALATION REQUIRED")
+        self.logger.info("=" * 80)
+        self.logger.info(f"Reason: {escalation_info.get('reason', 'Unknown')}")
+        self.logger.info(f"Escalation file: {escalation_info.get('escalation_file', 'Unknown')}")
+        self.logger.info(f"Timestamp: {escalation_info.get('timestamp', 'Unknown')}")
+        self.logger.info("\nA human operator must review this assessment before final decision.")
+        self.logger.info("=" * 80 + "\n")
+    
+    def log_completion(self, filepath: Optional[str] = None, escalation_info: Optional[Dict[str, Any]] = None):
         """Log workflow completion"""
         self.logger.info("\n" + "=" * 80)
-        self.logger.info("WORKFLOW COMPLETED")
+        if escalation_info:
+            self.logger.info("WORKFLOW COMPLETED (WITH ESCALATION)")
+        else:
+            self.logger.info("WORKFLOW COMPLETED")
         if filepath:
             self.logger.info(f"Result saved to: {filepath}")
+        if escalation_info:
+            self.logger.info(f"Escalation file: {escalation_info.get('escalation_file', 'Unknown')}")
         self.logger.info(f"Log file: {self.log_file}")
         self.logger.info("=" * 80 + "\n")
     

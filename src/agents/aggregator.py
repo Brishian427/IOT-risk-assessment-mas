@@ -5,11 +5,9 @@ Created: 2025-01-XX
 
 import json
 from tqdm import tqdm
-from langchain_openai import ChatOpenAI
-# Node functions don't need explicit Node import in LangGraph
-
 from src.schemas import StateSchema, RiskAssessment, ReasoningTrace
 from src.config import Config
+from src.utils.llm_factory import LLMFactory
 from src.utils.prompt_templates import AGGREGATOR_PROMPT, AGGREGATOR_REVISION_PROMPT
 from src.utils.reference_sources import get_reference_sources
 from src.utils.conversation_recorder import record
@@ -32,11 +30,14 @@ def aggregator_node(state: StateSchema) -> StateSchema:
     is_revision = revision_count > 0 and previous_draft is not None and len(critiques) > 0
     
     with tqdm(total=1, desc="Aggregator", unit="step", ncols=80, leave=False) as pbar:
-        # Initialize OpenAI for aggregation
-        llm = ChatOpenAI(
+        # Create LLM with transparent fallback
+        llm, actual_provider, actual_model, was_fallback = LLMFactory.create(
             model=Config.AGGREGATOR_MODEL,
+            provider=Config.AGGREGATOR_PROVIDER,
             temperature=Config.AGGREGATOR_TEMPERATURE,
-            api_key=Config.OPENAI_API_KEY
+            fallback_model=Config.AGGREGATOR_FALLBACK_MODEL,
+            fallback_provider=Config.AGGREGATOR_FALLBACK_PROVIDER,
+            context="aggregator"
         )
         
         if is_revision:
@@ -109,11 +110,18 @@ Risk Assessment Breakdown:
             record(
                 stage="aggregator",
                 role="aggregator",
-                model=Config.AGGREGATOR_MODEL,
+                model=f"{actual_provider}/{actual_model}",
                 prompt=prompt,
                 response=content,
                 revision=revision_count,
-                extra={"mode": "revision" if is_revision else "initial"},
+                extra={
+                    "mode": "revision" if is_revision else "initial",
+                    "intended_provider": Config.AGGREGATOR_PROVIDER,
+                    "intended_model": Config.AGGREGATOR_MODEL,
+                    "actual_provider": actual_provider,
+                    "actual_model": actual_model,
+                    "fallback_used": was_fallback
+                }
             )
             
             # Parse JSON from response
@@ -160,11 +168,11 @@ Risk Assessment Breakdown:
             record(
                 stage="aggregator",
                 role="aggregator",
-                model=Config.AGGREGATOR_MODEL,
+                model=f"{Config.AGGREGATOR_PROVIDER}/{Config.AGGREGATOR_MODEL}",
                 prompt=prompt,
                 response=f"ERROR: {str(e)}",
                 revision=revision_count,
-                extra={"mode": "revision" if is_revision else "initial"},
+                extra={"mode": "revision" if is_revision else "initial", "error": str(e)},
             )
             # On error, use first assessment as fallback
             return {

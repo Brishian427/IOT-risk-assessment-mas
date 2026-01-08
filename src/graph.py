@@ -12,6 +12,7 @@ from src.agents.challenger_a import challenger_a_node
 from src.agents.challenger_b import challenger_b_node
 from src.agents.challenger_c import challenger_c_node
 from src.agents.verifier import verifier_node, should_continue
+from src.agents.escalation_node import escalation_node
 
 
 def create_workflow():
@@ -27,6 +28,7 @@ def create_workflow():
     workflow.add_node("challenger_b", challenger_b_node)
     workflow.add_node("challenger_c", challenger_c_node)
     workflow.add_node("verifier", verifier_node)
+    workflow.add_node("escalation", escalation_node)
     
     # Define edges
     workflow.set_entry_point("generator_ensemble")
@@ -50,9 +52,13 @@ def create_workflow():
         should_continue,
         {
             "revise": "aggregator",  # Loop back to aggregator for revision
+            "escalate": "escalation",  # Route to human escalation
             "end": END
         }
     )
+    
+    # Escalation -> End (human review required)
+    workflow.add_edge("escalation", END)
     
     # Compile and return
     return workflow.compile()

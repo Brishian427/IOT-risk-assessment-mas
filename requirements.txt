@@ -1,12 +1,46 @@
 # IoT Risk Assessment Multi-Agent System
 # Created: 2025-01-XX
 
+# ===========================================
+# Core LangChain
+# ===========================================
 langgraph>=0.2.0
 langchain-core>=0.3.0
 langchain-openai>=0.2.0
-langchain-anthropic>=0.2.0
-langchain-google-genai>=0.2.0
+
+# ===========================================
+# Provider Families (6 total for "Council of 9")
+# ===========================================
+langchain-anthropic>=0.2.0      # Anthropic (Claude)
+langchain-google-genai>=1.0.0   # Google (Gemini)
+langchain-groq>=0.1.0           # Groq (Llama)
+langchain-mistralai>=0.1.0      # Mistral
+
+# ===========================================
+# Underlying SDKs
+# ===========================================
+anthropic>=0.18.0
+google-generativeai>=0.4.0
+groq>=0.4.0
+mistralai>=0.1.0
+
+# Note: DeepSeek uses OpenAI-compatible API, no extra package needed
+
+# ===========================================
+# RAG Database
+# ===========================================
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+
+# ===========================================
+# External Fact-Checking
+# ===========================================
 langchain-tavily>=0.1.0
+tavily-python>=0.3.0
+
+# ===========================================
+# Core Dependencies
+# ===========================================
 pydantic>=2.0.0
 python-dotenv>=1.0.0
 tqdm>=4.66.0
